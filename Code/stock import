@@ -1,0 +1,134 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "name": "stock.ipynb",
+      "provenance": [],
+      "authorship_tag": "ABX9TyP+d0CHncs9B/JzgUYMvwwR",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Raziel-JKM/Finance_AI/blob/main/Code/stock%20import\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "5B3K-ayooo9p",
+        "outputId": "11c19b9f-07a6-4a5b-e347-174a8f821b36"
+      },
+      "source": [
+        "# pandas datareader를 설치합니다.\n",
+        "!pip install pandas-datareader\n"
+      ],
+      "execution_count": 1,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "Requirement already satisfied: pandas-datareader in /usr/local/lib/python3.7/dist-packages (0.9.0)\n",
+            "Requirement already satisfied: lxml in /usr/local/lib/python3.7/dist-packages (from pandas-datareader) (4.2.6)\n",
+            "Requirement already satisfied: pandas>=0.23 in /usr/local/lib/python3.7/dist-packages (from pandas-datareader) (1.1.5)\n",
+            "Requirement already satisfied: requests>=2.19.0 in /usr/local/lib/python3.7/dist-packages (from pandas-datareader) (2.23.0)\n",
+            "Requirement already satisfied: pytz>=2017.2 in /usr/local/lib/python3.7/dist-packages (from pandas>=0.23->pandas-datareader) (2018.9)\n",
+            "Requirement already satisfied: numpy>=1.15.4 in /usr/local/lib/python3.7/dist-packages (from pandas>=0.23->pandas-datareader) (1.19.5)\n",
+            "Requirement already satisfied: python-dateutil>=2.7.3 in /usr/local/lib/python3.7/dist-packages (from pandas>=0.23->pandas-datareader) (2.8.2)\n",
+            "Requirement already satisfied: six>=1.5 in /usr/local/lib/python3.7/dist-packages (from python-dateutil>=2.7.3->pandas>=0.23->pandas-datareader) (1.15.0)\n",
+            "Requirement already satisfied: urllib3!=1.25.0,!=1.25.1,<1.26,>=1.21.1 in /usr/local/lib/python3.7/dist-packages (from requests>=2.19.0->pandas-datareader) (1.24.3)\n",
+            "Requirement already satisfied: certifi>=2017.4.17 in /usr/local/lib/python3.7/dist-packages (from requests>=2.19.0->pandas-datareader) (2021.5.30)\n",
+            "Requirement already satisfied: idna<3,>=2.5 in /usr/local/lib/python3.7/dist-packages (from requests>=2.19.0->pandas-datareader) (2.10)\n",
+            "Requirement already satisfied: chardet<4,>=3.0.2 in /usr/local/lib/python3.7/dist-packages (from requests>=2.19.0->pandas-datareader) (3.0.4)\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "swmCoN5josz8"
+      },
+      "source": [
+        "import pandas_datareader as pdr\n",
+        "# 1번 방법\n",
+        "# DataReader API를 통해서 yahoo finance의 주식 종목 데이터를 가져온다.\n",
+        "df = pdr.DataReader('주식 종목코드', 'yahoo')\n",
+        "# 2번 방법\n",
+        "# get_data_yahoo API를 통해서 yahho finance의 주식 종목 데이터를 가져온다.\n",
+        "df = pdr.get_data_yahoo('주식 종목코드')\n",
+        "# 선택적으로 일정 기간동안의 주식 정보를 가져오는 방법입니다.\n",
+        "from datetime import datetime\n",
+        "start = datetime(2018,1,1)\n",
+        "end = datetime(2019,12,31)\n",
+        "df = pdr.DataReader('주식 종목코드', 'yahoo', start, end)\n",
+        "df = pdr.get_data_yahoo('주식 종목코드', start, end)\n"
+      ],
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "J2xjv2GPo0pq"
+      },
+      "source": [
+        "+ 1번의 경우엔 parameter에 'yahoo', 'google' 등 직접 입력을 통하여 데이터를 가져오는 방법으로 동적으로 사용할 때 주로 사용하는 방법\n",
+        "\n",
+        "+ 2번의 경우엔 get_data_yahoo라는 API를 입력하여 yahoo finance에 대한 데이터만을 획득할 필요가 있을 때 사용하는 방법"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "id": "YYPxL-emo9Bb"
+      },
+      "source": [
+        "import pandas as pd\n",
+        "import pandas_datareader as pdr\n",
+        "# 회사명으로 주식 종목 코드를 획득할 수 있도록 하는 함수\n",
+        "def get_code(df, name):\n",
+        "  code = df.query(\"name=='{}'\".format(name))['code'].to_string(index=False)\n",
+        "# 위와같이 code명을 가져오면 앞에 공백이 붙어있는 상황이 발생하여 앞뒤로 sript() 하여 공백 제거\n",
+        "  code = code.strip()\n",
+        "  return code\n",
+        "# excel 파일을 다운로드하는거와 동시에 pandas에 load하기\n",
+        "# 흔히 사용하는 df라는 변수는 data frame을 의미합니다.\n",
+        "code_df = pd.read_html('http://kind.krx.co.kr/corpgeneral/corpList.do?method=download', header=0)[0]\n",
+        "# data frame정리\n",
+        "code_df = code_df[['회사명', '종목코드']]\n",
+        "# data frame title 변경 '회사명' = name, 종목코드 = 'code'\n",
+        "code_df = code_df.rename(columns={'회사명': 'name', '종목코드': 'code'})\n",
+        "# 종목코드는 6자리로 구분되기때문에 0을 채워 6자리로 변경\n",
+        "code_df.code = code_df.code.map('{:06d}'.format)\n",
+        "# ex) 삼성전자의의 코드를 구해보겠습니다.\n",
+        "code = get_code(code_df, '삼성전자')\n",
+        "# yahoo의 주식 데이터 종목은 코스피는 .KS, 코스닥은 .KQ가 붙습니다.\n",
+        "# 삼성전자의 경우 코스피에 상장되어있기때문에 '종목코드.KS'로 처리하도록 한다.\n",
+        "code = code + '.KS'\n",
+        "# get_data_yahoo API를 통해서 yahho finance의 주식 종목 데이터를 가져온다.\n",
+        "#df = pdr.get_data_yahoo(code)"
+      ],
+      "execution_count": 6,
+      "outputs": []
+    }
+  ]
+}
